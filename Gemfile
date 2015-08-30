@@ -9,12 +9,21 @@ gem "bcrypt", "~> 3.1.7"
 gem "has_secure_token"
 gem "warden"
 
-gem "spring", group: :development
-
 gem "sqlite3"
 
+group :development do
+  gem "spring"
+  gem "spring-commands-rspec"
+end
+
+group :development, :test do
+  gem "rspec-rails", "~> 3.0"
+end
+
 group :test do
-  gem "shoulda"
+  gem "shoulda-matchers", require: false
+  gem "factory_girl_rails"
+  gem "forgery"
 end
 
 # To use Jbuilder templates for JSON
