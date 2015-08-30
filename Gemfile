@@ -1,28 +1,25 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
+gem "rails", "4.2.3"
 
-gem 'rails', '4.2.3'
+gem "rails-api"
+gem "active_model_serializers", github: "rails-api/active_model_serializers"
 
-gem 'rails-api'
+gem "bcrypt", "~> 3.1.7"
+gem "has_secure_token"
+gem "warden"
 
-gem 'spring', :group => :development
+gem "spring", group: :development
 
+gem "sqlite3"
 
-gem 'sqlite3'
-
-
-
-# To use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+group :test do
+  gem "shoulda"
+  gem "minitest-blink1_reporter"
+end
 
 # To use Jbuilder templates for JSON
 # gem 'jbuilder'
 
 # Use unicorn as the app server
 # gem 'unicorn'
-
-# Deploy with Capistrano
-# gem 'capistrano', :group => :development
-
-# To use debugger
-# gem 'ruby-debug19', :require => 'ruby-debug'
