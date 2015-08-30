@@ -15,7 +15,6 @@ gem "sqlite3"
 
 group :test do
   gem "shoulda"
-  gem "minitest-blink1_reporter"
 end
 
 # To use Jbuilder templates for JSON
