@@ -1,41 +1,81 @@
 require "rails_helper"
 
 RSpec.describe UsersController, type: :controller do
-  let(:valid_attributes) do
-    { username: "John", password: "JohnDoe1", target_calories: 1000 }
+  def valid_attributes
+    attributes_for(:user)
   end
 
-  let(:invalid_attributes) do
-    { username: nil, password: "JohnDoe1", target_calories: "1000" }
+  def invalid_attributes
+    valid_attributes.tap { |a| a[:username] = "x" }
   end
 
   let!(:user) { User.create(valid_attributes) }
 
   describe "GET #show" do
     it "returns http success" do
+      puts valid_attributes
+      puts user.inspect
+      puts user.errors.to_a
       get :show, id: user.id, format: :json
       expect(response).to have_http_status(:success)
     end
   end
 
   describe "POST #create" do
-    it "returns http success" do
-      post :create, format: :json
-      expect(response).to have_http_status(:success)
+    context "with valid params" do
+      it "returns http success" do
+        post :create, user: valid_attributes, format: :json
+        expect(response).to have_http_status(:success)
+      end
+
+      it "creates a new User" do
+        expect do
+          post :create, user: valid_attributes, format: :json
+        end.to change(User, :count).by(1)
+      end
+    end
+
+    context "with invalid params" do
+      it "returns http unprocessable entity" do
+        post :create, user: invalid_attributes, format: :json
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
   end
 
   describe "PUT #update" do
-    it "returns http success" do
-      put :update, id: user.id, format: :json
-      expect(response).to have_http_status(:success)
+    context "with valid params" do
+      it "updates the requested customer" do
+        new_attributes = valid_attributes
+        put :update, id: user.id, user: new_attributes, format: :json
+        user.reload
+        expect(user.username).to eq(new_attributes[:username])
+      end
+
+      it "returns http success" do
+        put :update, id: user.id, user: valid_attributes, format: :json
+        expect(response).to have_http_status(:success)
+      end
+    end
+
+    context "with invalid params" do
+      it "returns http unprocessable entity" do
+        put :update, id: user.id, user: invalid_attributes, format: :json
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
   end
 
   describe "DELETE #destroy" do
+    it "destroys the requested customer" do
+      expect {
+        delete :destroy, id: user.id, format: :json
+      }.to change(User, :count).by(-1)
+    end
+
     it "returns http success" do
       delete :destroy, id: user.id, format: :json
-      expect(response).to have_http_status(:success)
+      expect(response).to have_http_status(:no_content)
     end
   end
 end
