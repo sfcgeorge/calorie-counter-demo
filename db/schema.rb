@@ -11,10 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150830173405) do
+ActiveRecord::Schema.define(version: 20150830231245) do
 
   create_table "meals", force: :cascade do |t|
-    t.integer  "callories"
+    t.integer  "calories"
     t.string   "text"
     t.date     "date"
     t.time     "time"
@@ -30,9 +30,9 @@ ActiveRecord::Schema.define(version: 20150830173405) do
     t.string   "password_digest"
     t.string   "token"
     t.boolean  "admin"
-    t.integer  "target_callories"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.integer  "target_calories"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   add_index "users", ["token"], name: "index_users_on_token", unique: true
