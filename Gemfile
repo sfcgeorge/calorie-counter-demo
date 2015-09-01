@@ -23,6 +23,7 @@ end
 
 group :test do
   gem "shoulda-matchers", require: false
+  gem "json_expressions"
   gem "factory_girl_rails"
   gem "forgery"
 end

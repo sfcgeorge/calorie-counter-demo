@@ -60,6 +60,7 @@ GEM
       activerecord (>= 3.0)
     i18n (0.7.0)
     json (1.8.3)
+    json_expressions (0.8.3)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
     mail (2.6.3)
@@ -147,6 +148,7 @@ DEPENDENCIES
   factory_girl_rails
   forgery
   has_secure_token
+  json_expressions
   named_seeds
   rails (= 4.2.3)
   rails-api

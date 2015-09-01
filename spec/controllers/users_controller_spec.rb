@@ -11,13 +11,23 @@ RSpec.describe UsersController, type: :controller do
 
   let!(:user) { User.create(valid_attributes) }
 
+  let(:show_pattern) do
+    {
+      id: Integer,
+      username: String,
+      target_calories: Integer
+    }
+  end
+
   describe "GET #show" do
     it "returns http success" do
-      puts valid_attributes
-      puts user.inspect
-      puts user.errors.to_a
       get :show, id: user.id, format: :json
       expect(response).to have_http_status(:success)
+    end
+
+    it "matches json pattern" do
+      get :show, id: user.id, format: :json
+      expect(response.body).to match_json_expression(show_pattern)
     end
   end
 
@@ -32,6 +42,11 @@ RSpec.describe UsersController, type: :controller do
         expect do
           post :create, user: valid_attributes, format: :json
         end.to change(User, :count).by(1)
+      end
+
+      it "matches json pattern" do
+        post :create, user: valid_attributes, format: :json
+        expect(response.body).to match_json_expression(show_pattern)
       end
     end
 
