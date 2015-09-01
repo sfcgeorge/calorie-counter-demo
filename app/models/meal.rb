@@ -1,4 +1,6 @@
 class Meal < ActiveRecord::Base
+  belongs_to :user
+
   validates :calories, presence: true, numericality: {
     only_integer: true, less_than_or_equal_to: 30_000
   }

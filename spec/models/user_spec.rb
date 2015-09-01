@@ -12,6 +12,8 @@ RSpec.describe User do
   describe "validations" do
     it { should have_secure_password }
 
+    it { should have_many(:meals) }
+
     it { should validate_presence_of(:username) }
     it { should validate_length_of(:username).is_at_least(2).is_at_most(20) }
     it { should validate_presence_of(:password).on(:create) }

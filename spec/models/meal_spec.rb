@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Meal do
   describe "db structure" do
+    it { should have_db_column(:user_id).of_type(:integer) }
     it { should have_db_column(:calories).of_type(:integer) }
     it { should have_db_column(:text).of_type(:string) }
     it { should have_db_column(:date).of_type(:date) }
@@ -9,6 +10,7 @@ RSpec.describe Meal do
   end
 
   describe "validations" do
+    it { should belong_to(:user) }
     it { should validate_presence_of(:calories) }
     it {
       should validate_numericality_of(:calories)
