@@ -60,7 +60,7 @@ RSpec.describe UsersController, type: :controller do
 
   describe "PUT #update" do
     context "with valid params" do
-      it "updates the requested customer" do
+      it "updates the requested user" do
         new_attributes = valid_attributes
         put :update, id: user.id, user: new_attributes, format: :json
         user.reload
@@ -82,7 +82,7 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    it "destroys the requested customer" do
+    it "destroys the requested user" do
       expect {
         delete :destroy, id: user.id, format: :json
       }.to change(User, :count).by(-1)
