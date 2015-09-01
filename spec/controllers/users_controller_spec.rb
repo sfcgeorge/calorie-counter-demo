@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe UsersController, type: :controller do
+  it_behaves_like "api_controller"
+
   def valid_attributes
     attributes_for(:user)
   end
