@@ -1,6 +1,9 @@
 require "rails_helper"
 
 RSpec.describe MealsController, type: :controller do
+  it_behaves_like "api_controller"
+  include_context "warden_mock_authenticated"
+
   def valid_attributes
     attributes_for(:meal)
   end
@@ -9,8 +12,8 @@ RSpec.describe MealsController, type: :controller do
     valid_attributes.tap { |a| a[:calories] = "x" }
   end
 
-  let!(:user) { create(:user) }
-  let!(:meal) { Meal.create(valid_attributes.merge user_id: user.id) }
+  let!(:user) { users(:kai) }
+  let!(:meal) { Meal.create(valid_attributes.merge user: user) }
   let!(:meal_not) { Meal.create(valid_attributes) }
 
   let(:show_pattern) do
@@ -30,18 +33,30 @@ RSpec.describe MealsController, type: :controller do
     end
 
     it "matches json pattern" do
-      get :index, user_id: user.id, format: :json
+      get :index, format: :json
       expect(response.body).to match_json_expression([show_pattern])
     end
 
     it "containt user's meals only" do
-      get :index, user_id: user.id, format: :json
+      get :index, format: :json
       expect(response.body).to match_json_expression(
         [{ id: meal.id }.forgiving!]
       )
       expect(response.body).not_to match_json_expression(
         [{ id: meal_not.id }.forgiving!]
       )
+    end
+  end
+
+  describe "GET #show" do
+    before { get :show, id: meal.id, format: :json }
+
+    it "returns http success" do
+      expect(response).to have_http_status(:success)
+    end
+
+    it "matches json pattern" do
+      expect(response.body).to match_json_expression(show_pattern)
     end
   end
 

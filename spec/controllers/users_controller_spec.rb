@@ -2,16 +2,20 @@ require "rails_helper"
 
 RSpec.describe UsersController, type: :controller do
   it_behaves_like "api_controller"
+  include_context "warden_mock_authenticated"
 
   def valid_attributes
     attributes_for(:user)
   end
 
   def invalid_attributes
-    valid_attributes.tap { |a| a[:username] = "x" }
+    valid_attributes.tap do |a|
+      a[:username] = "x"
+      a[:password] = "x"
+    end
   end
 
-  let!(:user) { User.create(valid_attributes) }
+  let!(:user) { users(:kai) }
 
   let(:show_pattern) do
     {
@@ -21,14 +25,80 @@ RSpec.describe UsersController, type: :controller do
     }
   end
 
-  describe "GET #show" do
+  describe "POST #login" do
+    context "with valid credentials" do
+      before do
+        request.headers["Authorization"] =
+          "Basic #{Base64.encode64("#{user.username}:Password1")}"
+        post :login, format: :json
+      end
+
+      it { expect(response).to have_http_status(:success) }
+
+      it "updates token" do
+        expect do
+          post :login, user: valid_attributes, format: :json
+          user.reload
+        end.to change(user, :token)
+      end
+
+      it "matches json pattern" do
+        expect(response.body).to match_json_expression(
+          token: String
+        )
+      end
+    end
+
+    context "with invalid credentials" do
+      before do
+        request.headers["Authorization"] = "Basic #{Base64.encode64 'u:nope'}"
+        post :login, format: :json
+      end
+
+      it { expect(response).to have_http_status(:unauthorized) }
+    end
+
+    context "with missing/invalid params" do
+      before { post :login, foo: { bar: "baz" }, format: :json }
+
+      it { expect(response).to have_http_status(:unprocessable_entity) }
+    end
+  end
+
+  describe "POST #logout" do
     it "returns http success" do
-      get :show, id: user.id, format: :json
+      post :logout, id: user.id, format: :json
+      expect(response).to have_http_status(:success)
+    end
+
+    it "change token" do
+      expect do
+        post :logout, id: user.id, format: :json
+        user.reload
+      end.to change(user, :token)
+    end
+  end
+
+  describe "GET #index" do
+    before { get :index, format: :json }
+
+    it "returns http success" do
       expect(response).to have_http_status(:success)
     end
 
     it "matches json pattern" do
-      get :show, id: user.id, format: :json
+      expect(response.body).to match_json_expression([show_pattern].forgiving!)
+    end
+  end
+
+  describe "GET #show" do
+    before { get :show, id: user.id, format: :json }
+
+    it "returns http success" do
+      expect(response).to have_http_status(:success)
+    end
+
+    it "matches json pattern" do
       expect(response.body).to match_json_expression(show_pattern)
     end
   end

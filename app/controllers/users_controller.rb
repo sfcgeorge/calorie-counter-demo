@@ -1,5 +1,37 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :update, :destroy]
+  include ActionController::HttpAuthentication::Basic::ControllerMethods
+
+  before_action :set_user, only: [:show, :update, :destroy, :logout]
+  after_action :verify_authorized, except: [:create, :login]
+
+  skip_before_action :authenticate!, only: [:create, :login]
+
+  def login
+    if authenticate_with_http_basic do |username, password|
+      if (user = User.find_by(username: username).try(:authenticate, password))
+        user.regenerate_token
+        render json: { token: user.token }
+      else
+        render json: { error: "Incorrect credentials" },
+               status: :unauthorized
+      end
+    end
+    else
+      render json: { error: "Invalid credentials" },
+             status: :unprocessable_entity
+    end
+  end
+
+  def logout
+    @user.regenerate_token
+
+    head :no_content
+  end
+
+  def index
+    authorize current_user
+    render json: policy_scope(User)
+  end
 
   def show
     render json: @user
@@ -37,5 +69,6 @@ class UsersController < ApplicationController
 
   def set_user
     @user = User.find(params[:id])
+    authorize @user
   end
 end

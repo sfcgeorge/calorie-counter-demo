@@ -11,6 +11,16 @@ require "rspec/rails"
 require "shoulda/matchers"
 require "json_expressions/rspec"
 require "factory_girl"
+require "named_seeds"
+NamedSeeds.load_seed
+
+# self.class.include NamedSeeds::TestHelper
+def named_seeds(name, options={})
+  define_method(name) do |*identities|
+    NamedSeeds::Identity.named(name, options).find(*identities)
+  end
+end
+named_seeds :users
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are

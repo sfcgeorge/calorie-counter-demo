@@ -1,8 +1,12 @@
 class MealsController < ApplicationController
-  before_action :set_meal, only: [:update, :destroy]
+  before_action :set_meal, only: [:show, :update, :destroy]
 
   def index
-    render json: Meal.where(user_id: params[:user_id])
+    render json: Meal.where(user: current_user)
+  end
+
+  def show
+    render json: @meal
   end
 
   def create
@@ -36,6 +40,6 @@ class MealsController < ApplicationController
   end
 
   def set_meal
-    @meal = Meal.find(params[:id])
+    @meal = current_user.meals.find(params[:id])
   end
 end
