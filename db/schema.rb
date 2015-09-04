@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150901155233) do
+ActiveRecord::Schema.define(version: 20150904202440) do
 
   create_table "meals", force: :cascade do |t|
     t.integer  "calories"
@@ -31,10 +31,10 @@ ActiveRecord::Schema.define(version: 20150901155233) do
     t.string   "username"
     t.string   "password_digest"
     t.string   "token"
-    t.boolean  "admin"
+    t.boolean  "admin",           default: false, null: false
     t.integer  "target_calories"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
   end
 
   add_index "users", ["token"], name: "index_users_on_token", unique: true

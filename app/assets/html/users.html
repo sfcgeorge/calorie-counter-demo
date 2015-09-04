@@ -1,0 +1,15 @@
+<h1>Users</h1>
+
+<table class="table">
+  <tr>
+    <th>Username</th>
+    <th>Admin?</th>
+    <th></th>
+  </tr>
+
+  <tr ng-repeat="user in users">
+    <td>{{user.username}}</td>
+    <td>{{!!user.admin}}</td>
+    <td><a href="#/users/{{user.id}}" class="btn btn-default">Edit</a></td>
+  </tr>
+</table>

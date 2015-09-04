@@ -10,7 +10,7 @@ class UsersController < ApplicationController
     if authenticate_with_http_basic do |username, password|
       if (user = User.find_by(username: username).try(:authenticate, password))
         user.regenerate_token
-        render json: { token: user.token }
+        render json: { id: user.id, token: user.token }
       else
         render json: { error: "Incorrect credentials" },
                status: :unauthorized
@@ -38,7 +38,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.create(valid_params)
+    @user = User.new(valid_params)
 
     if @user.save
       render json: @user, status: :created, location: @user
@@ -64,7 +64,7 @@ class UsersController < ApplicationController
   private
 
   def valid_params
-    params.require(:user).permit(:username, :password, :target_calories)
+    params.permit(:username, :password, :target_calories)
   end
 
   def set_user

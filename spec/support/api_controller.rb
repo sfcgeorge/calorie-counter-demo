@@ -23,13 +23,4 @@ RSpec.shared_examples "api_controller" do
       it { expect(response.body).to be_blank }
     end
   end
-
-  describe "rescues from ActionController::ParameterMissing" do
-    context "on POST #create" do
-      before { post :create, wrong_params: { foo: :bar }, format: :json }
-
-      it { expect(response.status).to eq(422) }
-      it { expect(response.body).to match(/error/) }
-    end
-  end
 end

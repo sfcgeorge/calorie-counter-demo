@@ -2,12 +2,14 @@ Rails.application.routes.draw do
   resources :meals, except: [:new, :edit]
   resources :users, except: [:new, :edit] do
     collection do
-      get "login"
+      post "login"
     end
     member do
       post "logout"
     end
   end
+
+  root "pages#index"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

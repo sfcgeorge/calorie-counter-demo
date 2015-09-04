@@ -1,0 +1,175 @@
+app = angular.module "app", ["ngResource", "ngRoute", "ab-base64"]
+
+
+app.factory "userInfo", -> {}
+
+
+app.config ($routeProvider, userInfoProvider, authenticationServiceProvider) ->
+  $routeProvider.
+    when("/signup",
+      templateUrl: "<%= asset_path "signup.html", type: :html %>"
+      controller: "SignupController"
+    ).
+    when("/login",
+      templateUrl: "<%= asset_path "login.html", type: :html %>"
+      controller: "LoginController"
+    ).
+    when("/meals",
+      templateUrl: "<%= asset_path "meals.html", type: :html %>"
+      controller: "MealsController"
+    ).
+    when("/meals/:id",
+      templateUrl: "<%= asset_path "meals.html", type: :html %>"
+      controller: "MealsController"
+    ).
+    when("/users/:id",
+      templateUrl: "<%= asset_path "user_edit.html", type: :html %>"
+      controller: "UserEditController"
+    ).
+    when("/users",
+      templateUrl: "<%= asset_path "users.html", type: :html %>"
+      controller: "UsersController"
+    ).
+    otherwise(
+      controller: "MainController"
+      templateUrl: "<%= asset_path "signup.html", type: :html %>" # dummy
+    )
+
+
+app.factory "User", ($resource) ->
+  $resource "/users/:id", { id: "@id" },
+    update: { method: "PUT" }
+
+
+app.factory "Meal", ($resource) ->
+  $resource "/meals/:id", { id: "@id" },
+    update: { method: "PUT" }
+
+
+app.controller "MainController", ($scope, $resource, $location, $route, authenticationService, userInfo) ->
+  if userInfo.info.id
+    $location.path("/meals")
+  else
+    $location.path("/signup")
+
+  $scope.logout = ->
+    console.log "logout"
+    authenticationService.logout()
+    $location.path("/")
+
+  $scope.userInfo = userInfo
+
+
+app.controller "MealsController", ($scope, $location, $routeParams, userInfo, Meal, User) ->
+  $scope.find = ->
+    $scope.meals = Meal.query
+      date_from: $scope.dateFrom
+      date_to: $scope.dateTo
+      time_from: $scope.timeFrom
+      time_to: $scope.timeTo
+  $scope.find()
+
+  User.get({ id: userInfo.info.id }).$promise.then (user) ->
+    $scope.targetCalories = user.target_calories
+
+  $scope.total = -> $scope.meals.map((meal) -> meal.calories * 1).reduce(((a, b) -> a + b), 0)
+  $scope.overTarget = -> $scope.targetCalories < $scope.total()
+
+  $scope.meal = new Meal()
+
+  $scope.editMeal = (meal) ->
+    $scope.meal = meal
+
+  $scope.deleteMeal = (meal) ->
+    meal.$delete ->
+      console.log "meal deleted"
+      $scope.find()
+
+  $scope.saveMeal = (id) ->
+    if id
+      $scope.meal.$update ->
+        console.log "updated meal"
+    else
+      $scope.meal.$save ->
+        console.log "saved meal"
+    $scope.meal = new Meal()
+    $scope.find()
+
+
+app.controller "UserEditController", ($scope, $location, $routeParams, User) ->
+  $scope.user = User.get({ id: $routeParams.id })
+
+  $scope.updateUser = ->
+    $scope.user.$update ->
+      $location.path("/")
+
+  $scope.deleteUser = ->
+    $scope.user.$delete ->
+      $location.path("/")
+
+
+app.controller "UsersController", ($scope, $location, $routeParams, User) ->
+  $scope.users = User.query()
+
+  $scope.editUser = (id) ->
+    $location.path("/users/#{id}")
+
+
+app.controller "LoginController", ($scope, $location, authenticationService, userInfo) ->
+  $scope.submitLogin = ->
+    authenticationService.login($scope.username, $scope.password).then ->
+      $location.path("/users/#{userInfo.info.id}")
+    , ->
+      alert("Invalid credentials")
+
+
+app.controller "SignupController", ($scope, $http, $location) ->
+  $scope.submitSignup = ->
+    $http.post '/users',
+      username: $scope.username
+      password: $scope.password
+      target_calories: $scope.calories
+    .error (response) ->
+      alert("Signup error\n#{JSON.stringify(response, null, 2)}")
+      console.log(response)
+    .success ->
+      $location.path("/login")
+      console.log "signup succeeded"
+
+
+app.factory "authenticationService", ($http, $q, $window, base64, userInfo) ->
+  login = (username, password) ->
+    deferred = $q.defer()
+
+    $http({ method: "POST", url: "/users/login", headers: { "Authorization": "Basic #{base64.encode("#{username}:#{password}")}" }})
+      .then (result) ->
+        $window.sessionStorage["userInfo"] = JSON.stringify result.data
+        init()
+        deferred.resolve(result.data.token)
+      , (error) ->
+        deferred.reject(error)
+
+    deferred.promise
+
+  logout = ->
+    deferred = $q.defer()
+    deferred.resolve({})
+
+    $http.post("/users/#{userInfo.info.id}/logout").then (result) ->
+      deferred.resolve(result)
+    , (error) ->
+      alert("Logout error\n#{JSON.stringify(error, null, 2)}")
+      deferred.reject(error)
+
+    $window.sessionStorage["userInfo"] = ""
+    init()
+    deferred.promise
+
+  init = ->
+    userInfo.info = {}
+    if $window.sessionStorage["userInfo"]
+      userInfo.info = JSON.parse $window.sessionStorage["userInfo"]
+      $http.defaults.headers.common.Authorization = "Token token=#{userInfo.info.token}"
+  init()
+
+  return { login: login, logout: logout, init: init }

@@ -63,25 +63,25 @@ RSpec.describe MealsController, type: :controller do
   describe "POST #create" do
     context "with valid params" do
       it "returns http success" do
-        post :create, meal: valid_attributes, format: :json
+        post :create, valid_attributes, format: :json
         expect(response).to have_http_status(:success)
       end
 
       it "creates a new Meal" do
         expect do
-          post :create, meal: valid_attributes, format: :json
+          post :create, valid_attributes, format: :json
         end.to change(Meal, :count).by(1)
       end
 
       it "matches json pattern" do
-        post :create, meal: valid_attributes, format: :json
+        post :create, valid_attributes, format: :json
         expect(response.body).to match_json_expression(show_pattern)
       end
     end
 
     context "with invalid params" do
       it "returns http unprocessable entity" do
-        post :create, meal: invalid_attributes, format: :json
+        post :create, invalid_attributes, format: :json
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -91,20 +91,20 @@ RSpec.describe MealsController, type: :controller do
     context "with valid params" do
       it "updates the requested customer" do
         new_attributes = valid_attributes
-        put :update, id: meal.id, meal: new_attributes, format: :json
+        put :update, id: meal.id, **new_attributes, format: :json
         meal.reload
         expect(meal.text).to eq new_attributes[:text]
       end
 
       it "returns http success" do
-        put :update, id: meal.id, meal: valid_attributes, format: :json
+        put :update, id: meal.id, **valid_attributes, format: :json
         expect(response).to have_http_status(:success)
       end
     end
 
     context "with invalid params" do
       it "returns http unprocessable entity" do
-        put :update, id: meal.id, meal: invalid_attributes, format: :json
+        put :update, id: meal.id, **invalid_attributes, format: :json
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -112,9 +112,9 @@ RSpec.describe MealsController, type: :controller do
 
   describe "DELETE #destroy" do
     it "destroys the requested meal" do
-      expect {
+      expect do
         delete :destroy, id: meal.id, format: :json
-      }.to change(Meal, :count).by(-1)
+      end.to change(Meal, :count).by(-1)
     end
 
     it "returns http success" do

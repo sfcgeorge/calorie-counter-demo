@@ -14,6 +14,10 @@ require "factory_girl"
 require "named_seeds"
 NamedSeeds.load_seed
 
+module Boolean; end
+class TrueClass; include Boolean; end
+class FalseClass; include Boolean; end
+
 # self.class.include NamedSeeds::TestHelper
 def named_seeds(name, options={})
   define_method(name) do |*identities|

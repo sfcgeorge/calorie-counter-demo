@@ -12,6 +12,10 @@ gem "pundit"
 
 gem "sqlite3"
 
+gem "sass-rails"
+gem "uglifier"
+gem "coffee-rails"
+
 group :development do
   gem "spring"
   gem "spring-commands-rspec"
@@ -30,8 +34,10 @@ group :test do
   gem "forgery"
 end
 
-# To use Jbuilder templates for JSON
-# gem 'jbuilder'
-
-# Use unicorn as the app server
-# gem 'unicorn'
+source "https://rails-assets.org" do
+  gem "rails-assets-angular"
+  gem "rails-assets-angular-resource"
+  gem "rails-assets-angular-route"
+  gem "rails-assets-angular-utf8-base64"
+  gem "rails-assets-bootstrap"
+end

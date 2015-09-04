@@ -3,6 +3,8 @@ class MealsController < ApplicationController
 
   def index
     render json: Meal.where(user: current_user)
+      .time_between(params[:time_from], params[:time_to])
+      .date_between(params[:date_from], params[:date_to])
   end
 
   def show
@@ -10,7 +12,7 @@ class MealsController < ApplicationController
   end
 
   def create
-    @meal = Meal.create(valid_params)
+    @meal = current_user.meals.new(valid_params)
 
     if @meal.save
       render json: @meal, status: :created, location: @meal
@@ -36,7 +38,7 @@ class MealsController < ApplicationController
   private
 
   def valid_params
-    params.require(:meal).permit(:calories, :text, :date, :time)
+    params.permit(:calories, :text, :date, :time)
   end
 
   def set_meal

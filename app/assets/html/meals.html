@@ -1,0 +1,41 @@
+<h1 style="width: 100%">Meals <span style="float: right; {{overTarget() ? 'color: red' : 'color: green; font-weight: normal'}}">Target Calories: {{targetCalories}}</span></h1>
+<p>Total: {{total()}}</p>
+
+<table class="table">
+  <tr>
+    <td><input class="form-control" placeholder="YYYY-MM-DD from" ng-model="dateFrom"></td>
+    <td><input class="form-control" placeholder="YYYY-MM-DD to" ng-model="dateTo"></td>
+    <td><input class="form-control" placeholder="HH:MM from" ng-model="timeFrom"></td>
+    <td><input class="form-control" placeholder="HH:MM to" ng-model="timeTo"></td>
+    <td><a ng-click="find()" class="btn btn-success">Filter</a></td>
+  </tr>
+</table>
+
+<table class="table">
+  <tr>
+    <th>Calories</th>
+    <th>Text</th>
+    <th>Date</th>
+    <th>Time</th>
+    <th></th>
+    <th></th>
+  </tr>
+
+  <tr>
+    <td><input class="form-control" placeholder="Calories" ng-model="meal.calories"></td>
+    <td><input class="form-control" placeholder="Text" ng-model="meal.text"></td>
+    <td><input class="form-control" placeholder="YYYY-MM-DD" ng-model="meal.date"></td>
+    <td><input class="form-control" placeholder="HH:MM" ng-model="meal.time"></td>
+    <td><a ng-click="saveMeal(meal.id)" class="btn btn-success">{{meal.id ? 'Save' : 'Add'}}</a></td>
+    <th></th>
+  </tr>
+
+  <tr ng-repeat="liMeal in meals">
+    <td>{{liMeal.calories}}</td>
+    <td>{{liMeal.text}}</td>
+    <td>{{liMeal.date}}</td>
+    <td>{{liMeal.time}}</td>
+    <td><a ng-click="editMeal(liMeal)" class="btn btn-primary">Edit</a></td>
+    <td><a ng-click="deleteMeal(liMeal)" class="btn btn-danger">Delete!</a></td>
+  </tr>
+</table>
