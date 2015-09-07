@@ -88,12 +88,13 @@ app.controller "MealsController", ($scope, $location, $routeParams, userInfo, Me
   $scope.saveMeal = (id) ->
     if id
       $scope.meal.$update ->
+        $scope.find()
         console.log "updated meal"
     else
       $scope.meal.$save ->
+        $scope.find()
         console.log "saved meal"
     $scope.meal = new Meal()
-    $scope.find()
 
 
 app.controller "UserEditController", ($scope, $location, $routeParams, User) ->
@@ -118,7 +119,7 @@ app.controller "UsersController", ($scope, $location, $routeParams, User) ->
 app.controller "LoginController", ($scope, $location, authenticationService, userInfo) ->
   $scope.submitLogin = ->
     authenticationService.login($scope.username, $scope.password).then ->
-      $location.path("/users/#{userInfo.info.id}")
+      $location.path("/meals")
     , ->
       alert("Invalid credentials")
 
