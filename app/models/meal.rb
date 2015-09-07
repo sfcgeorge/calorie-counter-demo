@@ -13,7 +13,7 @@ class Meal < ActiveRecord::Base
   end
 
   def time
-    Time.at(self[:time].to_i) if self[:time]
+    Time.at(self[:time].to_i).utc if self[:time]
   end
 
   def self.time_to_int(time)
