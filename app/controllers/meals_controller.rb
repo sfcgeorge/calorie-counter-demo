@@ -5,6 +5,7 @@ class MealsController < ApplicationController
     render json: Meal.where(user: current_user)
       .time_between(params[:time_from], params[:time_to])
       .date_between(params[:date_from], params[:date_to])
+      .order(created_at: :desc)
   end
 
   def show
