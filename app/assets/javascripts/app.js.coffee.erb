@@ -90,6 +90,9 @@ app.controller "MealsController", ($scope, $location, $routeParams, userInfo, Me
       $scope.meal.$update ->
         $scope.find()
         console.log "updated meal"
+      , (response) ->
+        console.log response
+        alert("Update error\n#{JSON.stringify(response, null, 2)}")
     else
       $scope.meal.$save ->
         $scope.find()

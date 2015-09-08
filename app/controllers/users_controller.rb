@@ -10,7 +10,7 @@ class UsersController < ApplicationController
     if authenticate_with_http_basic do |username, password|
       if (user = User.find_by(username: username).try(:authenticate, password))
         user.regenerate_token
-        render json: { id: user.id, token: user.token }
+        render json: { id: user.id, admin: user.admin, token: user.token }
       else
         render json: { error: "Incorrect credentials" },
                status: :unauthorized

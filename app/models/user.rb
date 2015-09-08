@@ -6,5 +6,5 @@ class User < ActiveRecord::Base
 
   validates :username, presence: true, length: { in: 2..20 }, uniqueness: true
   validates :password, presence: true, length: { minimum: 8 }, on: :create
-  validates :target_calories, presence: true
+  validates :target_calories, presence: true, numericality: true
 end

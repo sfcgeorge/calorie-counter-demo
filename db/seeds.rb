@@ -9,10 +9,10 @@ DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.clean
 
 @joe = create :user, id: identify(:joe), username: "Joe"
-@kash = create :user, id: identify(:kash), username: "Kash"
+@kash = create :user, id: identify(:kash), username: "Kash", admin: false
 @abdul = create :user, id: identify(:abdul), username: "Abdul"
 @emma = create :user, id: identify(:emma), username: "Emma"
 @kai = create :user, id: identify(:kai), username: "Kai", admin: true
 
-10.times { create :meal } if Rails.env.development?
+10.times { create :meal, user: @kash } if Rails.env.development?
 10.times { create :meal, user: @kai } if Rails.env.development?
